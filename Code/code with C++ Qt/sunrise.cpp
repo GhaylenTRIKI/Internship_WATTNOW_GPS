@@ -1,6 +1,7 @@
 #include <QtCore>
 #include "sunrise.h"
-
+#include <iostream>
+using namespace std;
 
 Sunrise::Sunrise(double latitude_, double longitude_, double elevation_)
   : latitude(latitude_)
@@ -12,8 +13,10 @@ Sunrise::Sunrise(double latitude_, double longitude_, double elevation_)
 
 int Sunrise::julian(const QDate &d)
 {
-    QDateTime dt(d, QTime(12, 1, 0, 0));
+    QDateTime dt(d, QTime(0, 0, 0, 0));
     return dt.toUTC().date().toJulianDay();
+
+
 }
 
 QTime Sunrise::sunrise(const QDate &d)

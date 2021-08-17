@@ -1,61 +1,26 @@
 #ifndef __SUNRISE_H__
 #define __SUNRISE_H__
-/////////////////////////////////////////////////////////////////////////////
-// Permission is granted to anyone to use this software for any
-// purpose and to redistribute it in any way, subject to the following
-// restrictions:
-//
-// 1. The author is not responsible for the consequences of use of
-//    this software, no matter how awful, even if they arise
-//    from defects in it.
-//
-// 2. The origin of this software must not be misrepresented, either
-//    by explicit claim or by omission.
-//
-// 3. Altered versions must be plainly marked as such, and must not
-//    be misrepresented (by explicit claim or omission) as being
-//    the original software.
-//
-// 4. This notice must not be removed or altered.
-/////////////////////////////////////////////////////////////////////////////
+
 
 
 #include <QDateTime>
 #include <math.h>
 #include <stdlib.h>
+#include <iostream>
+using namespace std;
 
 class Sunrise
 {
 public:
-    /**
-     * create sunrise calculator for a certain map point
-     *
-     * latitude
-     * north is +
-     * south is -
-     *
-     * longitude
-     * east is +
-     * west is -
-     *
-     * eleveation in meters above ground
-     *
-     * examples:
-     *
-     * Berlin
-     * 52.516N 13.271E
-     *
-     * Boa Vista
-     * 16.141N 22.904W
-     *
-     */
+
     Sunrise(double latitude_, double longitude_, double elevation_ = 0);
 
-    /*
-     * calculation functions
-     * param d is local date
-     * returns local time format
-     */
+
+    double timezone (double longitude)
+    {
+        return longitude > 0 ? floor((7.5+longitude)/15) : ceil((-7.5+longitude)/15) ;
+    }
+
     QTime sunrise(const QDate &d);
     QTime noon(const QDate &d);
     QTime sunset(const QDate &d);
@@ -134,12 +99,18 @@ private:
         double g = gamma(m);
         double l = dDegToRad(latitude);
         double sd = sin(dDegToRad(g)) * sin(dDegToRad(23.45));
+
+        cout <<"sun declination "<<sd<< endl;
+
         double cd = cos(asin(sd));
         double el = 0;
         if (elevation > 0.0) {
-          el = -2.076;
-          el *= sqrt(elevation) / 60.0;
+         // el = -2.076;
+         // el *= sqrt(elevation) / 60.0;
+            el= -2.076*elevation/M_PI;
         }
+        cout <<"sun elevation "<<-elevation << endl;
+
         o = sin(dDegToRad(-0.83 + el)) - sin(l)*sd;
         o /= cos(l) * cd;
         if (o > 1.0 || o < -1.0)
@@ -161,6 +132,7 @@ private:
         o += longitude;
         o /= 360.0;
         return 2451545.0009 + o + julianCycle(iJulianDay) + 0.0053*m - 0.0069*g;
+
     }
     double noon(int iJulianDay)
     {
@@ -173,6 +145,7 @@ private:
         double ss = sunset(iJulianDay);
         return ss < 0.0 ? -1.0 : transit - (ss - transit);
     }
+
 
     QDateTime date(double julian);
     int julian(const QDate &d);

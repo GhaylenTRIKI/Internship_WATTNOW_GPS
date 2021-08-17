@@ -4,6 +4,8 @@
 #include "sunrise.h"
 #include <iostream>
 #include <QPixmap>
+#include <sstream>
+#include <string>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,25 +28,30 @@ void MainWindow::on_pushButton_clicked()
      using namespace std;
        d = ui->dateEdit->date();
 
-
-
      cout << d.toString().toStdString() << endl;
-     // Sunrise sunrise(16.141, -22.904); // Boa Vista, Cabo Verde
 
 
-   /*
-    * Hannover
-      Position: 52° 23' 12" N,  9° 41' 52" E
-    */
+     Sunrise sunrise(ui->lineEdit_latitude->text().toDouble(), ui->lineEdit_longitude->text().toDouble(), ui->lineEdit_elevation->text().toDouble());
+
+     double longit = ui->lineEdit_longitude->text().toDouble();
+     cout << "longit= "<<longit<<endl;
+
+     ostringstream  ss1;
+     double timez= sunrise.timezone(longit);
+     cout << "timezone= "<<timez<<endl;
 
 
 
-     Sunrise sunrise(ui->lineEdit_latitude->text().toInt(), ui->lineEdit_longitude->text().toInt());
+     ss1<<timez;
+     string d_str1 = ss1.str();
+
+
+    ui->label_sunrise->setText("SUNRISE: "+sunrise.sunrise(d).toString()+ " UTC "+QString::fromUtf8(d_str1.c_str()));
+    ui->label_noon->setText("NOON: "+sunrise.noon(d).toString()+ " UTC "+QString::fromUtf8(d_str1.c_str()));
+    ui->label_sunset->setText("SUNSET: "+sunrise.sunset(d).toString()+ " UTC "+QString::fromUtf8(d_str1.c_str()));
 
 
 
-    ui->label_sunrise->setText("SUNRISE: "+sunrise.sunrise(d).toString());
-    ui->label_noon->setText("NOON: "+sunrise.noon(d).toString());
-    ui->label_sunset->setText("SUNSET: "+sunrise.sunset(d).toString());
+
 }
 
