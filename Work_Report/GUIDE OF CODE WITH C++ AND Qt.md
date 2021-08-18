@@ -144,7 +144,6 @@ int Sunrise::julian(const QDate &d)
     }
 ```
 **Now we have to add some conversions**
-
 - convert angle from .°.'."" to double
 ```sh
     static double angle(int degrees, int minutes, int seconds)
@@ -221,9 +220,16 @@ Sunrise sunrise( ui->lineEdit_latitude->text().toDouble(),                      
     ui->label_sunset->setText("SUNSET: "+sunrise.sunset(d).toString()+ " UTC "+QString::fromUtf8(d_str1.c_str()));
 ```
 
-
-![graphical user interface](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Code/code%20with%20C%2B%2B%20Qt/UserInterface.PNG)
-
+## Demo
+to test the accurancy of this class we have to compare the outputs with real values from surise sunset site [https://sunrise-sunset.org/]
+we choosed tunisia as an exemple:
+- first we have to know the latitude and longitude
+![tunisia coordinates](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tunisa%20coordinates.PNG)
+- then enter the appropriate coordinates and date. we fixed the elevation angle on -0.5 to have sunrise and sunset as outputs.
+![graphical user interface](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/GUI.PNG)
+- now we have to search for the real values in the site
+![sunrise sunset time tunisia](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/sunrise%26sunset_time_tunisia.PNG)
+- finally we notice that there is a maximum of 1 minute difference between the two results wich is acceptable.
 
 
 
