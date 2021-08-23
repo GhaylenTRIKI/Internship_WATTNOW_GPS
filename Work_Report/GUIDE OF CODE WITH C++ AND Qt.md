@@ -143,6 +143,15 @@ int Sunrise::julian(const QDate &d)
         return ss < 0.0 ? -1.0 : transit - (ss - transit);
     }
 ```
+13. we can also calculate the day length
+```sh
+        double DayLength(int iJulianDay)
+    {
+        double ss = sunset(iJulianDay);
+        double sr = sunrise(iJulianDay);
+        return ss < 0.0 ? -1.0 : 0.5+ (ss - sr);
+    }
+```
 **Now we have to add some conversions**
 - convert angle from .°.'."" to double
 ```sh
@@ -190,7 +199,7 @@ int Sunrise::julian(const QDate &d)
     }
 ```
 ## Graphical user interface (using Qt Creator)
-**We have four inputs, three outputs and a push button to release the calculation**
+**We have four inputs, multiple outputs and a push button to release the calculation**
 - first input: date
 ```sh
     QDate d;
@@ -209,27 +218,77 @@ Sunrise sunrise( ui->lineEdit_latitude->text().toDouble(),                      
 ```
 - first output: sunrise time
 ```sh
-    ui->label_sunrise->setText("SUNRISE: "+sunrise.sunrise(d).toString()+ " UTC "+QString::fromUtf8(d_str1.c_str()));
+    ui->label_sunrise->setText("<b> <font color='#550000'>SUNRISE: </font></b>"+sunrise.sunrise(d).toString());
 ```
 - second output: noon time
 ```sh
-    ui->label_noon->setText("NOON: "+sunrise.noon(d).toString()+ " UTC "+QString::fromUtf8(d_str1.c_str()));
+    ui->label_sunset->setText("<b> <font color='#550000'>SUNSET:   </font></b>"+sunrise.sunset(d).toString());
 ```
 - third output: sunset time
 ```sh
     ui->label_sunset->setText("SUNSET: "+sunrise.sunset(d).toString()+ " UTC "+QString::fromUtf8(d_str1.c_str()));
 ```
+- fourth output: day length
+```sh
+    ui->label_DayLength->setText("<b> <font color='#f23aff'>Day Length: </font></b>"+sunrise.DayLength(d).toString()+ " ");
+```
+- Twilight outputs:
+```sh
+    //civil twilight: elevation angle of the sun= -6°
+    Sunrise CivilTwilight(ui->lineEdit_latitude->text().toDouble(), ui->lineEdit_longitude->text().toDouble(), -6);
 
+    ui->label_CTS->setText(" "+CivilTwilight.sunrise(d).toString());
+    ui->label_CTE->setText(" "+CivilTwilight.sunset(d).toString());
+
+    //Nautical twilight: elevation angle of the sun= -12°
+    Sunrise NauticalTwilight(ui->lineEdit_latitude->text().toDouble(), ui->lineEdit_longitude->text().toDouble(), -12);
+
+    ui->label_NTS->setText(" "+NauticalTwilight.sunrise(d).toString());
+    ui->label_NTE->setText(" "+NauticalTwilight.sunset(d).toString());
+
+    //Astronomical twilight: elevation angle of the sun= -18°
+    Sunrise AstronomicalTwilight(ui->lineEdit_latitude->text().toDouble(), ui->lineEdit_longitude->text().toDouble(), -18);
+
+    ui->label_ATS->setText(" "+AstronomicalTwilight.sunrise(d).toString());
+    ui->label_ATE->setText(" "+AstronomicalTwilight.sunset(d).toString());
+```
+- final output: time zone
+```sh
+if(timez>0)
+    ui->label_timezone->setText("<b> <font color='#73C6B6'>Time Zone: </font></b>   GMT+"+QString::fromUtf8(d_str1.c_str()));
+else 
+    ui->label_timezone->setText("<b> <font color='#73C6B6'>Time Zone:  </font></b>  GMT"+QString::fromUtf8(d_str1.c_str()));
+```
 ## Demo
 to test the accurancy of this class we have to compare the outputs with real values from surise sunset site [https://sunrise-sunset.org/]
-we choosed tunisia as an exemple:
+we choosed two cities for the demo :Tunis and Tokyo.
+**1.Tunis:**
 - first we have to know the latitude and longitude
-![tunisia coordinates](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tunisa%20coordinates.PNG)
+![tunis coordinates](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tunisa%20coordinates.PNG)
 - then enter the appropriate coordinates and date. we fixed the elevation angle on -0.5 to have sunrise and sunset as outputs.
 ![graphical user interface](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/GUI.PNG)
 - now we have to search for the real values in the site
 ![sunrise sunset time tunisia](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/sunrise%26sunset_time_tunisia.PNG)
-- finally we notice that there is a maximum of 1 minute difference between the two results wich is acceptable.
+- to make sure that the values are good we change the date:
+
+01/04/2021:
+![tunis_01-04-2021](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tunis_01-04-2021.png)
+01/08/2021:
+![tunis_01-04-2021](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tunis_01-08-2021.png)
+01/10/2021:
+![tunis_01-04-2021](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tunis_01-10-2021.png)
+
+**2.Tokyo:**
+- first we have to know the latitude and longitude
+![Tokyo coordinates](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tokyoCoordinates.png)
+- we repeat the same process done with tunis
+01/04/2021:
+![tokyo_01-04-2021](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tokyo_01-04-2021.png)
+01/08/2021:
+![tokyo_01-04-2021](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tokyo_01-08-2021.png)
+01/10/2021:
+![tokyo_01-04-2021](https://raw.githubusercontent.com/GhaylenTRIKI/Internship_WATTNOW_GPS/main/Work_Report/imgs/tokyo_01-10-2021.png)
+- finally we notice that there is a maximum of 2 minute difference between the  results wich is acceptable due to the impact of the variation of the coordinates between each source of results..
 
 
 
