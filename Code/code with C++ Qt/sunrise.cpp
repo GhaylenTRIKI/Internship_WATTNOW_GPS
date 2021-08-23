@@ -25,7 +25,13 @@ QTime Sunrise::sunrise(const QDate &d)
         return QTime();
 
     double j = sunrise(julian(d));
-    return date(j).time();
+    QTime currentTime;
+
+     currentTime =date(j).time();
+     int x = (int)timezone(-longitude);
+     currentTime =( currentTime.addSecs(x*3600));
+     return currentTime;
+
 }
 
 QTime Sunrise::noon(const QDate &d)
@@ -34,7 +40,12 @@ QTime Sunrise::noon(const QDate &d)
         return QTime();
 
     double j = noon(julian(d));
-    return date(j).time();
+    QTime currentTime;
+
+     currentTime =date(j).time();
+     int x = (int)timezone(-longitude);
+     currentTime =( currentTime.addSecs(x*3600));
+     return currentTime;
 }
 
 QTime Sunrise::sunset(const QDate &d)
@@ -43,6 +54,20 @@ QTime Sunrise::sunset(const QDate &d)
         return QTime();
 
     double j = sunset(julian(d));
+    QTime currentTime;
+
+     currentTime =date(j).time();
+     int x = (int)timezone(-longitude);
+     currentTime =( currentTime.addSecs(x*3600));
+     return currentTime;
+}
+
+QTime Sunrise::DayLength(const QDate &d)
+{
+    if (!d.isValid())
+        return QTime();
+
+    double j = DayLength(julian(d));
     return date(j).time();
 }
 
@@ -57,4 +82,6 @@ QDateTime Sunrise::date(double julian)
     double julianMSecs = (julian - static_cast<double>(julianDays)) * 86400.0 * 1000.0;
     // Julian days start at noon (12:00 UTC)
     return QDateTime(d, QTime(12, 0, 0, 0), Qt::UTC).addMSecs(qRound(julianMSecs)).toLocalTime();
+
+
 }
